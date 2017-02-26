@@ -1,6 +1,7 @@
 'use strict';
 
 const Neuron = require('./Neuron');
+const NNUtils = require('./../NNUtils');
 
 class HiddenNeuron extends Neuron {
     constructor() {
@@ -10,7 +11,7 @@ class HiddenNeuron extends Neuron {
     registerInboundNeuron(neuron) {
         let inboundNeuron = {
             neuron: neuron,
-            weight: Math.random()
+            weight: NNUtils.getRandomWeight()
         };
         this.inbounds.push(inboundNeuron);
         neuron.addListener('inbound', (value) => {
@@ -31,21 +32,6 @@ class HiddenNeuron extends Neuron {
         inboundNeuron.value = value;
     }
 
-    calculate() {
-        let value = 0;
-        this.arrivedValuesCount = 0;
-        this.inbounds.forEach((inbound) => {
-
-
-
-            value += inbound.value;
-
-
-
-            delete inbound.value;
-        });
-        return value;
-    }
 }
 
 module.exports = HiddenNeuron;

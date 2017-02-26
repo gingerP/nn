@@ -2,10 +2,14 @@
 
 const NN = require('./NN');
 const testData = [
-    [0, 0]
+    [1, 0],
+    [2, 0],
+    [3, 0],
+    [4, 0],
+    [5, 0]
 ];
 
-let network = new NN(1, 100, 100, 1);
-network.executePhase(testData);
-
-
+let network = new NN(1, 100, 10, 1);
+network.executePhase(testData).then((result) => {
+    console.log(JSON.stringify(result, null, '  '));
+});

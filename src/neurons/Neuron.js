@@ -1,6 +1,7 @@
 'use strict';
 
 const EventEmitter = require('events');
+const NNUtils = require('./../NNUtils');
 
 class Neuron extends EventEmitter {
     constructor() {
@@ -13,7 +14,7 @@ class Neuron extends EventEmitter {
     registerInboundNeuron(neuron) {
         let inboundNeuron = {
             neuron: neuron,
-            weight: Math.random()
+            weight: NNUtils.getRandomWeight()
         };
         this.inbounds.push(inboundNeuron);
         neuron.addListener('inbound', (value) => {
@@ -34,7 +35,24 @@ class Neuron extends EventEmitter {
         inboundNeuron.value = value;
     }
 
-    calculate() {}
+
+
+    calculate() {
+        let value = 0;
+        this.arrivedValuesCount = 0;
+        this.inbounds.forEach((inbound) => {
+            value += inbound.value * inbound.weight;
+            delete inbound.value;
+        });
+        return NNUtils.normalizeValueHyperbolicTangent(value);
+    }
+
+    correctWeight(weightsDelta, learningRate) {
+        this.inbounds.forEach((inbound) => {
+
+
+        });
+    }
 }
 
 module.exports = Neuron;

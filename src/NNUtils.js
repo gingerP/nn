@@ -63,6 +63,36 @@ class NNUtils {
             });
         };
     }
+
+    /**
+     * MSE
+     * */
+    static calculateErrorMSE(phaseResult) {
+        let summary = 0;
+        let actual = phaseResult.actualOutbound;
+
+        phaseResult.expectedOutbound.forEach((expexted, i) => {
+            summary += (expexted - actual[i]) * (expexted - actual[i]);
+        });
+
+        return summary / actual.length;
+    }
+
+    static normalizeValueSigmoid(x) {
+        return 1 / (1 + Math.exp(-x));
+    }
+
+    static normalizeValueHyperbolicTangent(x) {
+        return (Math.exp(2 * x) - 1) / (Math.exp(2 * x) + 1);
+    }
+
+    static derivativeHyperbolicTangent(x) {
+        return 4 * Math.exp(2 * x) / ((Math.exp(2 * x) + 1) * (Math.exp(2 * x) + 1));
+    }
+
+    static getRandomWeight() {
+        return Math.random() * 2 - 1;
+    }
 }
 
 module.exports = NNUtils;
