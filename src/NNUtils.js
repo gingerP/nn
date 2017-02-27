@@ -67,11 +67,11 @@ class NNUtils {
     /**
      * MSE
      * */
-    static calculateErrorMSE(phaseResult) {
+    static calculateErrorMSE(setResult) {
         let summary = 0;
-        let actual = phaseResult.actualOutbound;
+        let actual = setResult.actualOutbound;
 
-        phaseResult.expectedOutbound.forEach((expexted, i) => {
+        setResult.expectedOutbound.forEach((expexted, i) => {
             summary += (expexted - actual[i]) * (expexted - actual[i]);
         });
 
@@ -92,6 +92,10 @@ class NNUtils {
 
     static getRandomWeight() {
         return Math.random() * 2 - 1;
+    }
+
+    static calculateWeightDelta(value, childWeightDelta, learningRate) {
+        return value * childWeightDelta * learningRate;
     }
 }
 

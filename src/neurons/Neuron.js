@@ -2,6 +2,7 @@
 
 const EventEmitter = require('events');
 const NNUtils = require('./../NNUtils');
+const Promise = require('bluebird');
 
 class Neuron extends EventEmitter {
     constructor() {
@@ -14,7 +15,9 @@ class Neuron extends EventEmitter {
     registerInboundNeuron(neuron) {
         let inboundNeuron = {
             neuron: neuron,
-            weight: NNUtils.getRandomWeight()
+            weight: NNUtils.getRandomWeight(),
+            isValueUpdated: false,
+            value: null
         };
         this.inbounds.push(inboundNeuron);
         neuron.addListener('inbound', (value) => {
@@ -29,28 +32,31 @@ class Neuron extends EventEmitter {
     }
 
     collectInbound(value, inboundNeuron) {
-        if (!inboundNeuron.hasOwnProperty('value')) {
+        if (!inboundNeuron.isValueUpdated) {
             this.arrivedValuesCount++;
         }
         inboundNeuron.value = value;
+        inboundNeuron.isValueUpdated = true;
+
     }
-
-
 
     calculate() {
         let value = 0;
         this.arrivedValuesCount = 0;
         this.inbounds.forEach((inbound) => {
             value += inbound.value * inbound.weight;
-            delete inbound.value;
         });
         return NNUtils.normalizeValueHyperbolicTangent(value);
     }
 
     correctWeight(weightsDelta, learningRate) {
-        this.inbounds.forEach((inbound) => {
+        return Promise.each(this.inbounds, (inbound) => {
+            inbound.isValueUpdated = false;
+            let newWeightsDelta = NNUtils.calculateWeightDelta(inbound.value, weightsDelta, learningRate);
+            delete inbound.value;
 
-
+            inbound.weight -= newWeightsDelta;
+            return inbound.neuron.correctWeight(newWeightsDelta, learningRate);
         });
     }
 }

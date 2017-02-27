@@ -28,19 +28,16 @@ class NN {
                     [phaseValue[0]],
                     [phaseValue[1]]
                 ).then((outboundResult) => {
-                    return this.correctWeight(outboundResult).return(outboundResult);
-                }).then((value) => {
+                    outboundResult.error = this.calculateError(outboundResult);
+                    return outboundResult;//this.correctWeight(outboundResult).return(outboundResult);
+                }).then(
+                    outboundResult => this.correctWeight(outboundResult)
+                ).then((value) => {
                     results.push(value);
                     return value;
                 });
             }
-        ).then(() => {
-            let error = this.calculateError(results);
-            return {
-                error: error,
-                results: results
-            };
-        });
+        );
     }
 
     executeSet(inboundValues, outboundValues) {
@@ -60,16 +57,18 @@ class NN {
         });
     }
 
-    calculateError(phaseResult) {
-        return NNUtils.calculateErrorMSE(phaseResult);
+    calculateError(setResult) {
+        return NNUtils.calculateErrorMSE(setResult);
     }
 
     correctWeight(outbound) {
         let error = this.calculateError(outbound);
         let weightsDelta = error * NNUtils.derivativeHyperbolicTangent(error);
-        this.outboundLayer.forEach((neuron) => {
-            neuron.correctWeight(weightsDelta, this.learningRate)
-        });
+        return Promise.each(
+            this.outboundLayer,
+            neuron => neuron.correctWeight(weightsDelta, this.learningRate)
+        );
+        return Promise.resolve({});
     }
 }
 

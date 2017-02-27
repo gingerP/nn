@@ -11,7 +11,9 @@ class OutNeuron extends Neuron {
     registerInboundNeuron(neuron) {
         let inboundNeuron = {
             neuron: neuron,
-            weight: NNUtils.getRandomWeight()
+            weight: NNUtils.getRandomWeight(),
+            isValueUpdated: false,
+            value: null
         };
         this.inbounds.push(inboundNeuron);
         neuron.addListener('inbound', (value) => {
